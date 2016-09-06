@@ -108,6 +108,23 @@
 		return oldText;
 	};
 
+    var sbqSearchFunc = function(search){
+        var sbq = document.getElementById("sbq");
+        sbq.value = appendText(sbq.value, search);
+        sbq.focus();
+        var nvp_site_mail = document.getElementsByName("nvp_site_mail")[0];
+        nvp_site_mail.click();
+    }
+
+    var makeSearchA = function(link_text, search_action){
+        A = makeA(link_text, "javascript:void(0);")
+        A.addEventListener("click",
+            function(){
+                sbqSearchFunc(search_action)
+            }, false);
+        return A;
+    }
+
 var mainAGBHE = function(){
     'use strict';
     var links = document.links;
@@ -120,19 +137,15 @@ var mainAGBHE = function(){
             break;
         }
     }
-	
-	var filters = [];
-	
-	var qtext = document.getElementById("sbq").value;
-	var unreadSearch = appendText(qtext, "is:unread");
-	var unreadA = makeA("unread", getSearchURL(document.location, unreadSearch));
-	
-	var weekSearch = appendText(qtext, "newer_than:7d");
-	var weekA = makeA("This week", getSearchURL(document.location, weekSearch))
+
+    var unreadA = makeSearchA("unread", "is:unread");
+    var weekA = makeSearchA("This week", "newer_than:7d");
+
     var filters = [
         unreadA
 		, weekA
         ];
+
     for (i=0; i<filters.length; i+=1){
         var tmp_tr = trTrash.cloneNode(true);
         var tmp_td = tmp_tr.firstChild;
