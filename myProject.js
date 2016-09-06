@@ -1,14 +1,3 @@
-// ==UserScript==
-// @name         another Gmail basic HTML enhancement
-// @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  inspired by GMail Basic HTML Enhancement, more features
-// @author       haobug
-// @match        http*://mail.google.com/mail/*/h/*
-// @grant        none
-// @require      file:///D:/src/qunit/myProject.js
-// ==/UserScript==
-
     var getBaseURL = function(link){
         return link.protocol +"//"+ link.host + link.pathname;
     };
