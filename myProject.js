@@ -140,10 +140,12 @@ var mainAGBHE = function(){
 
     var unreadA = makeSearchA("unread", "is:unread");
     var weekA = makeSearchA("This week", "newer_than:7d");
+    var olderA = makeSearchA("1 week older", "older_than:7d");
 
     var filters = [
         unreadA
         , weekA
+        , olderA
         ];
 
     for (i=0; i<filters.length; i+=1){
