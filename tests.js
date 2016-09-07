@@ -142,9 +142,9 @@ QUnit.test( "makeElement", function( assert ) {
     assert.equal(a.innerText, "[A link]");
     assert.equal(a.href, url);
 
-    // var value= "new_label";
-    // var texta ="[New label]";
-    // var new_opt = makeElement("OPTION", {value, texta});
-    // assert.equal(value, new_opt.value);
-    // assert.equal(texta, new_opt.text);
+    var value= "new_label";
+    var innerText ="[New label]";
+    var new_opt = makeElement("OPTION", {value, innerText});
+    assert.equal(new_opt.value, value);
+    assert.equal(new_opt.text, innerText);
 });

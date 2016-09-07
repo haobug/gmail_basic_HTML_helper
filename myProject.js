@@ -156,9 +156,8 @@ var mainAGBHE = function(){
     }
 
     var cf2_sel = document.getElementsByName("cf2_sel")[0];
-    var new_opt = makeElement("OPTION", {
-            value: "new_label",
-            text: "[New label]"}
-        );
+    var value= "new_label";
+    var innerText ="[New label]";
+    var new_opt = makeElement("OPTION", {value, innerText});
     cf2_sel.insertBefore(new_opt, cf2_sel.options[0].nextSibling);
 };
