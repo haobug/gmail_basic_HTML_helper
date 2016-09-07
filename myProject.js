@@ -213,6 +213,9 @@ var makeFormData = function(fields, boundary){
     data += makeEnd(boundary);
     return data;
 };
+    var hideElement = function(elem){
+        elem.style.display = 'none';
+    };
 
 var createLabel = function(){
     var xhttp = newAjax();
@@ -230,8 +233,15 @@ var createLabel = function(){
         var tmp_edit = document.getElementById("label_edit");
         var tmp_btn = document.getElementById("create_btn");
         if (this.readyState == 4 && this.status == 200) {
-            tmp_edit.style.display = 'none';
+            hideElement(tmp_edit);
             tmp_btn.value = "Created"
+            var cf2_sel = document.getElementsByName("cf2_sel")[0];
+            var innerText = tmp_edit.value;
+            var value = tmp_edit.value;
+            var opt_new = makeElement("OPTION", {innerText, value})
+            opt_new.selected = true;
+            cf2_sel.appendChild(opt_new);
+            hideElement(tmp_btn);
         } else {
             tmp_btn.value = "Failed"
         }
