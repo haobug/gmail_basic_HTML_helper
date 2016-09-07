@@ -97,13 +97,13 @@
         return oldText;
     };
 
-    var sbqSearchFunc = function(search){
-        var sbq = document.getElementById("sbq");
-        sbq.value = appendText(sbq.value, search);
-        sbq.focus();
-        var nvp_site_mail = document.getElementsByName("nvp_site_mail")[0];
-        nvp_site_mail.click();
-    }
+var sbqSearchFunc = function(search){
+    var sbq = document.getElementById("sbq");
+    sbq.value = appendText(sbq.value, search);
+    sbq.focus();
+    var nvp_site_mail = document.getElementsByName("nvp_site_mail")[0];
+    nvp_site_mail.click();
+}
 
     var makeSearchA = function(link_text, search_action){
         A = makeA(link_text, "javascript:void(0);")
@@ -124,8 +124,9 @@
         return elem;
     };
 
-var mainAGBHE = function(){
-    'use strict';
+    
+var addFilters = function(){
+    //add filter at message page
     var links = document.links;
     var i = 0;
     var trTrash = null;
@@ -154,10 +155,19 @@ var mainAGBHE = function(){
         tmp_td.replaceChild(filters[i], tmp_td.firstChild);
         trTrash.parentNode.insertBefore(tmp_tr, trTrash.nextSibling);
     }
+};
 
+var addNewLabel = function(){
+    // add new label option on creating filter wizard
     var cf2_sel = document.getElementsByName("cf2_sel")[0];
     var value= "new_label";
     var innerText ="[New label]";
     var new_opt = makeElement("OPTION", {value, innerText});
     cf2_sel.insertBefore(new_opt, cf2_sel.options[0].nextSibling);
+}
+
+var mainAGBHE = function(){
+    'use strict';
+    addFilters();
+    addNewLabel();
 };
