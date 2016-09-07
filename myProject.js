@@ -1,3 +1,4 @@
+/*jshint scripturl:true*/
     var getBaseURL = function(link){
         return link.protocol +"//"+ link.host + link.pathname;
     };
@@ -5,7 +6,7 @@
     var getQuery = function(link){
         return link.search;
     };
-    
+
     var getPath = function(link){
         return link.pathname;
     };
@@ -107,16 +108,16 @@ var sbqSearchFunc = function(search){
     sbq.focus();
     var nvp_site_mail = document.getElementsByName("nvp_site_mail")[0];
     nvp_site_mail.click();
-}
+};
 
     var makeSearchA = function(link_text, search_action){
-        A = makeA(link_text, "javascript:void(0);")
+        var A = makeA(link_text, "javascript:void(0);");
         A.addEventListener("click",
             function(){
-                sbqSearchFunc(search_action)
+                sbqSearchFunc(search_action);
             }, false);
         return A;
-    }
+    };
 
     var makeElement = function(elem_name, attrs){
         var elem = document.createElement(elem_name);
@@ -157,9 +158,9 @@ var addFilters = function(){
     var olderA = makeSearchA("1 week older", "older_than:7d");
 
     var filters = [
-        unreadA
-        , weekA
-        , olderA
+        unreadA,
+        weekA,
+        olderA
         ];
 
     for (i=0; i<filters.length; i+=1){
@@ -176,7 +177,7 @@ var makeOneField = function(name, value, boundary)
     var crlf = "\r\n";
     var one_part = '--' + boundary + crlf +
         'Content-Disposition: form-data'+'; '+ 'name="'+name+'"' + crlf +
-        crlf + 
+        crlf +
         value + crlf +
         '';
     return one_part;
@@ -223,7 +224,7 @@ var createLabel = function(){
     var boundary= genBoundary();
     var baseurl = getPath(makeA("",window.location));
     xhttp.open("POST", baseurl, true);
-    xhttp.setRequestHeader("Content-type", 
+    xhttp.setRequestHeader("Content-type",
         "multipart/form-data; boundary="+boundary);
     xhttp.setRequestHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
     xhttp.setRequestHeader("upgrade-insecure-requests", 1);
@@ -234,16 +235,16 @@ var createLabel = function(){
         var tmp_btn = document.getElementById("create_btn");
         if (this.readyState == 4 && this.status == 200) {
             hideElement(tmp_edit);
-            tmp_btn.value = "Created"
+            tmp_btn.value = "Created";
             var cf2_sel = document.getElementsByName("cf2_sel")[0];
             var innerText = tmp_edit.value;
             var value = tmp_edit.value;
-            var opt_new = makeElement("OPTION", {innerText, value})
+            var opt_new = makeElement("OPTION", {innerText, value});
             opt_new.selected = true;
             cf2_sel.appendChild(opt_new);
             hideElement(tmp_btn);
         } else {
-            tmp_btn.value = "Failed"
+            tmp_btn.value = "Failed";
         }
         console.log(this.responseText);
     };
@@ -256,12 +257,14 @@ var createLabel = function(){
     form_str = makeFormData(datas, boundary);
     xhttp.send(form_str);
     var tmp_btn = document.getElementById("create_btn");
-    tmp_btn.value = "Creating"
+    tmp_btn.value = "Creating";
 };
 
 var addNewLabel = function(){
     // add new label option on creating filter wizard
     var cf2_sel = document.getElementsByName("cf2_sel")[0];
+    if (!cf2_sel)
+        return;
     var value= "new_label";
     var innerText ="[New label]";
     var new_opt = makeElement("OPTION", {value, innerText});
@@ -279,7 +282,7 @@ var addNewLabel = function(){
             create_btn, cf2_sel.nextSibling
         );
 
-        var attrs = {};
+        attrs = {};
         attrs.type = "text";
         attrs.value = "";
         attrs.id = "label_edit";
@@ -288,7 +291,7 @@ var addNewLabel = function(){
             label_edit, cf2_sel.nextSibling
         );
     });
-}
+};
 
 var mainAGBHE = function(){
     'use strict';
