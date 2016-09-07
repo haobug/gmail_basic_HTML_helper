@@ -5,6 +5,10 @@
     var getQuery = function(link){
         return link.search;
     };
+    
+    var getPath = function(link){
+        return link.pathname;
+    };
 
     var getHash = function(link){
         return link.hash;
@@ -170,7 +174,7 @@ var addFilters = function(){
 var makeOneField = function(name, value, boundary)
 {
     var crlf = "\r\n";
-    var one_part = '------' + boundary + crlf +
+    var one_part = '--' + boundary + crlf +
         'Content-Disposition: form-data'+'; '+ 'name="'+name+'"' + crlf +
         crlf + 
         value + crlf +
@@ -178,15 +182,19 @@ var makeOneField = function(name, value, boundary)
     return one_part;
 };
 
+var makeEnd = function(boundary){
+    return '--'+boundary+'--';
+};
+
 var makeFormData = function(fields, boundary){
     var crlf = "\r\n";
     var data = "";
     if(!boundary)
-        boundary = "WebKitFormBoundary0KSv35EzkggvWVbJ";
+        boundary = "----WebKitFormBoundary0KSv35EzkggvWVbJ";
     for (var k in fields){
         data += makeOneField(k, fields[k], boundary);
     }
-    data += '------'+boundary+'--';
+    data += makeEnd(boundary);
     return data;
 };
 
@@ -195,16 +203,33 @@ var createLabel = function(){
     console.log({tmp_edit});
     var xhttp = newAjax();
     //TODO: getBaseURL(url)
-    xhttp.open("POST", getBaseURL(makeA("",window.location)), true);
-    xhttp.setRequestHeader("Content-type", "multipart/form-data;");
+    var boundary="----"+"WebKitFormBoundary"+"mPj76D7fK36RAq6A"; //TODO: random 
+    var baseurl = getPath(makeA("",window.location));
+    xhttp.open("POST", baseurl, true);
+    xhttp.setRequestHeader("Content-type", 
+        "multipart/form-data; boundary="+boundary);
+    xhttp.setRequestHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+    xhttp.setRequestHeader("upgrade-insecure-requests", 1);
+    xhttp.setRequestHeader("location", baseurl+"?v=prl");
+    xhttp.setRequestHeader("cache-control", "max-age=0");
+    var tmp_btn = document.getElementById("create_btn");
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            tmp_edit.disabled = true;
+            tmp_edit.style.display = 'none';
+            tmp_btn.value = "Created"
+        } else {
+            tmp_btn.value = "Failed"
         }
         console.log(this.responseText);
     };
     var datas = {};
-    xhttp.send(makeFormData(datas));
+    datas.at = document.getElementsByName("at")[0].value;
+    datas.ecn= "test" + Math.floor(Math.random()*100)+10 + '';
+    datas.nvp_bu_nl = "创建";
+    datas.redir = '?v=prl';
+    form_str = makeFormData(datas, boundary);
+    xhttp.send(form_str);
+    tmp_btn.value = "Creating"
 };
 
 var addNewLabel = function(){

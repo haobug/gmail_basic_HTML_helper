@@ -164,7 +164,7 @@ QUnit.test( "makeFormData", function( assert ) {
     datas.ecn= "test";
     datas.nvp_bu_nl = "创建";
     datas.redir = '?v=prl';
-    var boundary = "WebKitFormBoundary0KSv35EzkggvWVbJ";
+    var boundary = "----WebKitFormBoundary0KSv35EzkggvWVbJ";
     var formdata = makeFormData(datas);
 
     var at_part = makeOneField("at", datas.at, boundary);
@@ -199,7 +199,7 @@ QUnit.test( "makeFormData", function( assert ) {
         ecn +
         nvp_bu_nl +
         redir +
-        '------' + boundary + '--', "all");
+        makeEnd(boundary), "all");
 
     datas.more = "field";
     formdata = makeFormData(datas);
@@ -210,5 +210,9 @@ QUnit.test( "makeFormData", function( assert ) {
         nvp_bu_nl +
         redir +
         more +
-        '------' + boundary + '--', "more field");
+        makeEnd(boundary), "more field");
+    var test_boundary ='8cfCYPWC76xq0ZCG';
+    formdata = makeFormData(datas, test_boundary);
+    var ptn = new RegExp(test_boundary, "g");
+    assert.equal(formdata.match(ptn).length, 5+1, "bounary count");
 });
