@@ -124,7 +124,17 @@ var sbqSearchFunc = function(search){
         return elem;
     };
 
-    
+    var newAjax = function(){
+        var xhttp;
+        if (window.XMLHttpRequest) {
+            xhttp = new XMLHttpRequest();
+            } else {
+            // code for IE6, IE5
+            xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        return xhttp;
+    };
+
 var addFilters = function(){
     //add filter at message page
     var links = document.links;
@@ -157,6 +167,46 @@ var addFilters = function(){
     }
 };
 
+var makeOneField = function(name, value, boundary)
+{
+    var crlf = "\r\n";
+    var one_part = '------' + boundary + crlf +
+        'Content-Disposition: form-data'+'; '+ 'name="'+name+'"' + crlf +
+        crlf + 
+        value + crlf +
+        '';
+    return one_part;
+};
+
+var makeFormData = function(fields, boundary){
+    var crlf = "\r\n";
+    var data = "";
+    if(!boundary)
+        boundary = "WebKitFormBoundary0KSv35EzkggvWVbJ";
+    for (var k in fields){
+        data += makeOneField(k, fields[k], boundary);
+    }
+    data += '------'+boundary+'--';
+    return data;
+};
+
+var createLabel = function(){
+    var tmp_edit = document.getElementById("label_edit");
+    console.log({tmp_edit});
+    var xhttp = newAjax();
+    //TODO: getBaseURL(url)
+    xhttp.open("POST", getBaseURL(makeA("",window.location)), true);
+    xhttp.setRequestHeader("Content-type", "multipart/form-data;");
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            tmp_edit.disabled = true;
+        }
+        console.log(this.responseText);
+    };
+    var datas = {};
+    xhttp.send(makeFormData(datas));
+};
+
 var addNewLabel = function(){
     // add new label option on creating filter wizard
     var cf2_sel = document.getElementsByName("cf2_sel")[0];
@@ -164,6 +214,28 @@ var addNewLabel = function(){
     var innerText ="[New label]";
     var new_opt = makeElement("OPTION", {value, innerText});
     cf2_sel.insertBefore(new_opt, cf2_sel.options[0].nextSibling);
+    cf2_sel.addEventListener("change", function(){
+        if(cf2_sel.options[cf2_sel.selectedIndex] != new_opt)
+            return;
+        var attrs = {};
+        attrs.type = "button";
+        attrs.value = "Create";
+        attrs.id = "create_btn";
+        var create_btn = makeElement("INPUT", attrs);
+        create_btn.addEventListener("click", createLabel);
+        cf2_sel.parentNode.insertBefore(
+            create_btn, cf2_sel.nextSibling
+        );
+
+        var attrs = {};
+        attrs.type = "text";
+        attrs.value = "";
+        attrs.id = "label_edit";
+        var label_edit = makeElement("INPUT", attrs);
+        cf2_sel.parentNode.insertBefore(
+            label_edit, cf2_sel.nextSibling
+        );
+    });
 }
 
 var mainAGBHE = function(){

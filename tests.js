@@ -147,4 +147,68 @@ QUnit.test( "makeElement", function( assert ) {
     var new_opt = makeElement("OPTION", {value, innerText});
     assert.equal(new_opt.value, value);
     assert.equal(new_opt.text, innerText);
+
+    var attrs = {};
+    attrs.type = "button";
+    attrs.value = "Create";
+    attrs.id = "create_btn";
+    var new_input = makeElement("INPUT", attrs);
+    assert.equal(new_input.type, attrs.type);
+    assert.equal(new_input.value, attrs.value);
+    assert.equal(new_input.id, attrs.id);
+});
+
+QUnit.test( "makeFormData", function( assert ) {
+    var datas = {};
+    datas.at = "AF6bupPjT4zkZylxB4zV45BXrsZw_unNuQ";
+    datas.ecn= "test";
+    datas.nvp_bu_nl = "创建";
+    datas.redir = '?v=prl';
+    var boundary = "WebKitFormBoundary0KSv35EzkggvWVbJ";
+    var formdata = makeFormData(datas);
+
+    var at_part = makeOneField("at", datas.at, boundary);
+    console.log(at_part);
+    formdata = formdata.replace(at_part, '');
+    assert.equal(formdata.indexOf(at_part), -1, "at_part");
+
+    var nvp_bu_nl = makeOneField("nvp_bu_nl", datas.nvp_bu_nl, boundary);
+    console.log(nvp_bu_nl);
+    assert.notEqual(nvp_bu_nl, at_part, "nvp_bu_nl != at_part");
+    formdata = formdata.replace(nvp_bu_nl, '');
+    assert.equal(formdata.indexOf(nvp_bu_nl), -1, "nvp_bu_nl");
+    assert.equal(formdata.indexOf('nvp_bu_nl'), -1, "nvp_bu_nl_str");
+
+    var ecn = makeOneField("ecn", datas.ecn, boundary);
+    console.log(ecn);
+    assert.notEqual(ecn, at_part);
+    formdata = formdata.replace(ecn, '');
+    assert.equal(formdata.indexOf(ecn), -1, "ecn");
+    assert.equal(formdata.indexOf('ecn'), -1, "ecn_str");
+
+    var redir = makeOneField("redir", datas.redir, boundary);
+    console.log(redir);
+    assert.notEqual(redir, at_part);
+    formdata = formdata.replace(redir, '');
+    assert.equal(-1, formdata.indexOf(redir), "redir");
+    assert.equal(-1, formdata.indexOf('redir'), "redir_str");
+    //all
+    formdata = makeFormData(datas);
+    assert.equal(formdata,
+        at_part +
+        ecn +
+        nvp_bu_nl +
+        redir +
+        '------' + boundary + '--', "all");
+
+    datas.more = "field";
+    formdata = makeFormData(datas);
+    more = makeOneField("more", datas.more, boundary);
+    assert.equal(formdata,
+        at_part +
+        ecn +
+        nvp_bu_nl +
+        redir +
+        more +
+        '------' + boundary + '--', "more field");
 });
