@@ -1,20 +1,14 @@
-// ==UserScript==
-// @name         another Gmail basic HTML enhancement
-// @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  inspired by GMail Basic HTML Enhancement, more features
-// @author       haobug
-// @match        http*://mail.google.com/mail/*/h/*
-// @grant        none
-// @require      file:///D:/src/qunit/myProject.js
-// ==/UserScript==
-
+/*jshint scripturl:true*/
     var getBaseURL = function(link){
         return link.protocol +"//"+ link.host + link.pathname;
     };
 
     var getQuery = function(link){
         return link.search;
+    };
+
+    var getPath = function(link){
+        return link.pathname;
     };
 
     var getHash = function(link){
@@ -108,25 +102,46 @@
         return oldText;
     };
 
-    var sbqSearchFunc = function(search){
-        var sbq = document.getElementById("sbq");
-        sbq.value = appendText(sbq.value, search);
-        sbq.focus();
-        var nvp_site_mail = document.getElementsByName("nvp_site_mail")[0];
-        nvp_site_mail.click();
-    }
+var sbqSearchFunc = function(search){
+    var sbq = document.getElementById("sbq");
+    sbq.value = appendText(sbq.value, search);
+    sbq.focus();
+    var nvp_site_mail = document.getElementsByName("nvp_site_mail")[0];
+    nvp_site_mail.click();
+};
 
     var makeSearchA = function(link_text, search_action){
-        A = makeA(link_text, "javascript:void(0);")
+        var A = makeA(link_text, "javascript:void(0);");
         A.addEventListener("click",
             function(){
-                sbqSearchFunc(search_action)
+                sbqSearchFunc(search_action);
             }, false);
         return A;
-    }
+    };
 
-var mainAGBHE = function(){
-    'use strict';
+    var makeElement = function(elem_name, attrs){
+        var elem = document.createElement(elem_name);
+        for (var i in attrs){
+            elem[i] = attrs[i];
+        }
+        // elem.value = "new_label";
+        // elem.text = "[New label]";
+        return elem;
+    };
+
+    var newAjax = function(){
+        var xhttp;
+        if (window.XMLHttpRequest) {
+            xhttp = new XMLHttpRequest();
+            } else {
+            // code for IE6, IE5
+            xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+        return xhttp;
+    };
+
+var addFilters = function(){
+    //add filter at message page
     var links = document.links;
     var i = 0;
     var trTrash = null;
@@ -140,10 +155,12 @@ var mainAGBHE = function(){
 
     var unreadA = makeSearchA("unread", "is:unread");
     var weekA = makeSearchA("This week", "newer_than:7d");
+    var olderA = makeSearchA("1 week older", "older_than:7d");
 
     var filters = [
-        unreadA
-        , weekA
+        unreadA,
+        weekA,
+        olderA
         ];
 
     for (i=0; i<filters.length; i+=1){
@@ -153,4 +170,131 @@ var mainAGBHE = function(){
         tmp_td.replaceChild(filters[i], tmp_td.firstChild);
         trTrash.parentNode.insertBefore(tmp_tr, trTrash.nextSibling);
     }
+};
+
+var makeOneField = function(name, value, boundary)
+{
+    var crlf = "\r\n";
+    var one_part = '--' + boundary + crlf +
+        'Content-Disposition: form-data'+'; '+ 'name="'+name+'"' + crlf +
+        crlf +
+        value + crlf +
+        '';
+    return one_part;
+};
+
+var makeEnd = function(boundary){
+    return '--'+boundary+'--';
+};
+
+    var makeid = function(size){
+    //http://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for( var i=0; i < size; i++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    };
+
+var genBoundary = function(){
+    return "----WebKitFormBoundary" +makeid(16);
+};
+
+var makeFormData = function(fields, boundary){
+//https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Forms/Sending_forms_through_JavaScript
+    var crlf = "\r\n";
+    var data = "";
+    if(!boundary)
+        boundary = genBoundary();
+    for (var k in fields){
+        data += makeOneField(k, fields[k], boundary);
+    }
+    data += makeEnd(boundary);
+    return data;
+};
+    var hideElement = function(elem){
+        elem.style.display = 'none';
+    };
+
+var createLabel = function(){
+    var xhttp = newAjax();
+    //TODO: getBaseURL(url)
+    var boundary= genBoundary();
+    var baseurl = getPath(makeA("",window.location));
+    xhttp.open("POST", baseurl, true);
+    xhttp.setRequestHeader("Content-type",
+        "multipart/form-data; boundary="+boundary);
+    xhttp.setRequestHeader("accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+    xhttp.setRequestHeader("upgrade-insecure-requests", 1);
+    xhttp.setRequestHeader("location", baseurl+"?v=prl");
+    xhttp.setRequestHeader("cache-control", "max-age=0");
+    xhttp.onreadystatechange = function() {
+        var tmp_edit = document.getElementById("label_edit");
+        var tmp_btn = document.getElementById("create_btn");
+        if (this.readyState == 4 && this.status == 200) {
+            hideElement(tmp_edit);
+            tmp_btn.value = "Created";
+            var cf2_sel = document.getElementsByName("cf2_sel")[0];
+            var innerText = tmp_edit.value;
+            var value = tmp_edit.value;
+            var opt_new = makeElement("OPTION", {innerText, value});
+            opt_new.selected = true;
+            cf2_sel.appendChild(opt_new);
+            hideElement(tmp_btn);
+        } else {
+            tmp_btn.value = "Failed";
+        }
+        console.log(this.responseText);
+    };
+    var datas = {};
+    datas.at = document.getElementsByName("at")[0].value;
+    var tmp_edit = document.getElementById("label_edit");
+    datas.ecn= tmp_edit.value.trim();
+    datas.nvp_bu_nl = "创建";
+    datas.redir = '?v=prl';
+    form_str = makeFormData(datas, boundary);
+    xhttp.send(form_str);
+    var tmp_btn = document.getElementById("create_btn");
+    tmp_btn.value = "Creating";
+};
+
+var addNewLabel = function(){
+    // add new label option on creating filter wizard
+    var cf2_sel = document.getElementsByName("cf2_sel")[0];
+    if (!cf2_sel)
+        return;
+    var value= "new_label";
+    var innerText ="[New label]";
+    var new_opt = makeElement("OPTION", {value, innerText});
+    cf2_sel.insertBefore(new_opt, cf2_sel.options[0].nextSibling);
+    cf2_sel.addEventListener("change", function(){
+        if(cf2_sel.options[cf2_sel.selectedIndex] != new_opt)
+            return;
+        var attrs = {};
+        attrs.type = "button";
+        attrs.value = "Create";
+        attrs.id = "create_btn";
+        var create_btn = makeElement("INPUT", attrs);
+        create_btn.addEventListener("click", createLabel);
+        cf2_sel.parentNode.insertBefore(
+            create_btn, cf2_sel.nextSibling
+        );
+
+        attrs = {};
+        attrs.type = "text";
+        attrs.value = "";
+        attrs.id = "label_edit";
+        var label_edit = makeElement("INPUT", attrs);
+        cf2_sel.parentNode.insertBefore(
+            label_edit, cf2_sel.nextSibling
+        );
+    });
+};
+
+var mainAGBHE = function(){
+    'use strict';
+    addFilters();
+    addNewLabel();
 };
