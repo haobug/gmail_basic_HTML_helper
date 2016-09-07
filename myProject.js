@@ -1,17 +1,23 @@
 /*jshint scripturl:true*/
-    var getBaseURL = function(link){
+    var getBaseURL = function(urlstr){
+        var link = makeA("getBaseURL", urlstr);
         return link.protocol +"//"+ link.host + link.pathname;
     };
 
-    var getQuery = function(link){
+    var getQuery = function(urlstr){
+        var link = makeA("getQuery", urlstr);
         return link.search;
     };
 
-    var getPath = function(link){
+    var getPath = function(urlstr){
+        var link = makeA("getPath", urlstr);
         return link.pathname;
     };
 
-    var getHash = function(link){
+    var getHash = function(urlstr){
+        var link = makeA("getHash", urlstr);
+        console.log({urlstr})
+        console.log({link})
         return link.hash;
     };
 
@@ -220,9 +226,8 @@ var makeFormData = function(fields, boundary){
 
 var createLabel = function(){
     var xhttp = newAjax();
-    //TODO: getBaseURL(url)
     var boundary= genBoundary();
-    var baseurl = getPath(makeA("",window.location));
+    var baseurl = getPath(window.location);
     xhttp.open("POST", baseurl, true);
     xhttp.setRequestHeader("Content-type",
         "multipart/form-data; boundary="+boundary);

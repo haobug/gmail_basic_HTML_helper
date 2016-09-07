@@ -1,20 +1,16 @@
 //tests.js
 QUnit.test("getBaseURL", function( assert ) {
 	var url = "http://www.oreilly.com:1234/catalog/search.html?q=JavaScript&m=10#results";
-	var link = document.createElement("A");
-	link.href = url;
-	assert.equal(getBaseURL(link), "http://www.oreilly.com:1234/catalog/search.html");
+    assert.equal(typeof url, "string");
+	assert.equal(getBaseURL(url), "http://www.oreilly.com:1234/catalog/search.html");
 });
 
 QUnit.test( "getQuery", function( assert ) {
 	var url = "http://www.oreilly.com:1234/catalog/search.html?q=JavaScript&m=10#results";
-	var link = document.createElement("A");
-	link.href = url;
-	assert.equal(getQuery(link), "?q=JavaScript&m=10");
+	assert.equal(getQuery(url), "?q=JavaScript&m=10");
 	url = "https://mail.google.com/mail/u/0/h/aj6ck996tvqb/?&#getSearchURL";
-	link.href = url;
 	assert.equal(
-		getQuery(link), "?&");
+		getQuery(url), "?&");
 });
 
 QUnit.test( "makeA", function( assert ) {
@@ -108,20 +104,21 @@ QUnit.test( "mergeQuerys", function( assert ) {
 
 QUnit.test( "getHash", function( assert ) {
 	var url = "http://www.oreilly.com:1234/catalog/search.html?q=JavaScript&m=10#getHash";
-	var link = document.createElement("A");
-	link.href = url;
-	assert.equal(getHash(link), "#getHash");
+	assert.equal(getHash(url), "#getHash");
 	//#results is hash
+});
+
+QUnit.test( "getPath", function( assert ) {
+	var url = "http://www.oreilly.com:1234/catalog/search.html?q=JavaScript&m=10#getHash";
+	assert.equal(getPath(url), "/catalog/search.html");
 });
 
 QUnit.test( "getSearchURL", function( assert ) {
 	var url = "https://mail.google.com/mail/u/0/h/aj6ck996tvqb/?&#getSearchURL";
-	var oldlink = document.createElement("A");
-	oldlink.href = url;
 	assert.equal(
-		getQuery(oldlink), "?&");
+		getQuery(url), "?&");
 	assert.equal(
-		getSearchURL(oldlink, "is:unread"),
+		getSearchURL(url, "is:unread"),
 		"https://mail.google.com/mail/u/0/h/aj6ck996tvqb/?s=q&q=is%3Aunread"
 	);
 });
