@@ -125,3 +125,26 @@ QUnit.test( "getSearchURL", function( assert ) {
 		"https://mail.google.com/mail/u/0/h/aj6ck996tvqb/?s=q&q=is%3Aunread"
 	);
 });
+
+QUnit.test( "makeElement", function( assert ) {
+    var opt = makeElement("OPTION", {
+            value: "new_label",
+            text: "[New label]"}
+        );
+    assert.equal("OPTION", opt.tagName);
+    
+    var url = "http://mail.google.com/";
+    var a = makeElement("A", {
+            href: url,
+            innerText: "[A link]"}
+        );
+    assert.equal(a.tagName, "A");
+    assert.equal(a.innerText, "[A link]");
+    assert.equal(a.href, url);
+
+    // var value= "new_label";
+    // var texta ="[New label]";
+    // var new_opt = makeElement("OPTION", {value, texta});
+    // assert.equal(value, new_opt.value);
+    // assert.equal(texta, new_opt.text);
+});

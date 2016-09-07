@@ -114,6 +114,16 @@
         return A;
     }
 
+    var makeElement = function(elem_name, attrs){
+        var elem = document.createElement(elem_name);
+        for (var i in attrs){
+            elem[i] = attrs[i];
+        }
+        // elem.value = "new_label";
+        // elem.text = "[New label]";
+        return elem;
+    };
+
 var mainAGBHE = function(){
     'use strict';
     var links = document.links;
@@ -144,4 +154,11 @@ var mainAGBHE = function(){
         tmp_td.replaceChild(filters[i], tmp_td.firstChild);
         trTrash.parentNode.insertBefore(tmp_tr, trTrash.nextSibling);
     }
+
+    var cf2_sel = document.getElementsByName("cf2_sel")[0];
+    var new_opt = makeElement("OPTION", {
+            value: "new_label",
+            text: "[New label]"}
+        );
+    cf2_sel.insertBefore(new_opt, cf2_sel.options[0].nextSibling);
 };
