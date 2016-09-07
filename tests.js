@@ -164,8 +164,8 @@ QUnit.test( "makeFormData", function( assert ) {
     datas.ecn= "test";
     datas.nvp_bu_nl = "创建";
     datas.redir = '?v=prl';
-    var boundary = "----WebKitFormBoundary0KSv35EzkggvWVbJ";
-    var formdata = makeFormData(datas);
+    var boundary = genBoundary();
+    var formdata = makeFormData(datas, boundary);
 
     var at_part = makeOneField("at", datas.at, boundary);
     console.log(at_part);
@@ -193,7 +193,7 @@ QUnit.test( "makeFormData", function( assert ) {
     assert.equal(-1, formdata.indexOf(redir), "redir");
     assert.equal(-1, formdata.indexOf('redir'), "redir_str");
     //all
-    formdata = makeFormData(datas);
+    formdata = makeFormData(datas, boundary);
     assert.equal(formdata,
         at_part +
         ecn +
@@ -202,7 +202,7 @@ QUnit.test( "makeFormData", function( assert ) {
         makeEnd(boundary), "all");
 
     datas.more = "field";
-    formdata = makeFormData(datas);
+    formdata = makeFormData(datas, boundary);
     more = makeOneField("more", datas.more, boundary);
     assert.equal(formdata,
         at_part +
@@ -215,4 +215,11 @@ QUnit.test( "makeFormData", function( assert ) {
     formdata = makeFormData(datas, test_boundary);
     var ptn = new RegExp(test_boundary, "g");
     assert.equal(formdata.match(ptn).length, 5+1, "bounary count");
+});
+
+QUnit.test( "makeid", function( assert ) {
+    assert.notEqual(makeid(16), "");
+    assert.equal(makeid(16).length, 16);
+    assert.equal(makeid(10).length, 10);
+    assert.notEqual(makeid(16), makeid(16), "diff on call");
 });

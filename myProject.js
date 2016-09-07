@@ -186,11 +186,27 @@ var makeEnd = function(boundary){
     return '--'+boundary+'--';
 };
 
+    var makeid = function(size){
+    //http://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for( var i=0; i < size; i++ )
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    };
+
+var genBoundary = function(){
+    return "----WebKitFormBoundary" +makeid(16);
+};
+
 var makeFormData = function(fields, boundary){
+//https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Forms/Sending_forms_through_JavaScript
     var crlf = "\r\n";
     var data = "";
     if(!boundary)
-        boundary = "----WebKitFormBoundary0KSv35EzkggvWVbJ";
+        boundary = genBoundary();
     for (var k in fields){
         data += makeOneField(k, fields[k], boundary);
     }
@@ -199,11 +215,9 @@ var makeFormData = function(fields, boundary){
 };
 
 var createLabel = function(){
-    var tmp_edit = document.getElementById("label_edit");
-    console.log({tmp_edit});
     var xhttp = newAjax();
     //TODO: getBaseURL(url)
-    var boundary="----"+"WebKitFormBoundary"+"mPj76D7fK36RAq6A"; //TODO: random 
+    var boundary= genBoundary();
     var baseurl = getPath(makeA("",window.location));
     xhttp.open("POST", baseurl, true);
     xhttp.setRequestHeader("Content-type", 
@@ -212,8 +226,9 @@ var createLabel = function(){
     xhttp.setRequestHeader("upgrade-insecure-requests", 1);
     xhttp.setRequestHeader("location", baseurl+"?v=prl");
     xhttp.setRequestHeader("cache-control", "max-age=0");
-    var tmp_btn = document.getElementById("create_btn");
     xhttp.onreadystatechange = function() {
+        var tmp_edit = document.getElementById("label_edit");
+        var tmp_btn = document.getElementById("create_btn");
         if (this.readyState == 4 && this.status == 200) {
             tmp_edit.style.display = 'none';
             tmp_btn.value = "Created"
@@ -224,11 +239,13 @@ var createLabel = function(){
     };
     var datas = {};
     datas.at = document.getElementsByName("at")[0].value;
-    datas.ecn= "test" + Math.floor(Math.random()*100)+10 + '';
+    var tmp_edit = document.getElementById("label_edit");
+    datas.ecn= tmp_edit.value.trim();
     datas.nvp_bu_nl = "创建";
     datas.redir = '?v=prl';
     form_str = makeFormData(datas, boundary);
     xhttp.send(form_str);
+    var tmp_btn = document.getElementById("create_btn");
     tmp_btn.value = "Creating"
 };
 
