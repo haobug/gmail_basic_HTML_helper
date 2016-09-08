@@ -7,6 +7,8 @@
 // @match        https://mail.google.com/mail/u/*/h/*/?&
 // @match        https://mail.google.com/mail/u/*/h/*/?&s=*
 // @match        https://mail.google.com/mail/u/*/h/*/?s=*
+// @match        https://mail.google.com/mail/u/*/h/*/?v=prf
+// @match        https://mail.google.com/mail/u/*/h/*/?&v=prl
 // @grant        none
 // @require      file:///D:/src/qunit/myProject.js
 // ==/UserScript==

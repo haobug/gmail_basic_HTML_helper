@@ -116,14 +116,14 @@ var sbqSearchFunc = function(search){
     nvp_site_mail.click();
 };
 
-    var makeSearchA = function(link_text, search_action){
-        var A = makeA(link_text, "javascript:void(0);");
-        A.addEventListener("click",
-            function(){
-                sbqSearchFunc(search_action);
-            }, false);
-        return A;
-    };
+var makeSearchA = function(link_text, search_action){
+    var A = makeA(link_text, "javascript:void(0);");
+    A.addEventListener("click",
+        function(){
+            sbqSearchFunc(search_action);
+        }, false);
+    return A;
+};
 
     var makeElement = function(elem_name, attrs){
         var elem = document.createElement(elem_name);

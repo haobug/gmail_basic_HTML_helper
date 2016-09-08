@@ -220,3 +220,9 @@ QUnit.test( "makeid", function( assert ) {
     assert.equal(makeid(10).length, 10);
     assert.notEqual(makeid(16), makeid(16), "diff on call");
 });
+
+QUnit.test( "makeSearchA", function( assert ) {
+    var sa = makeSearchA("makeSearchA", "is:unread");
+    assert.equal(sa.href, "javascript:void(0);");
+    assert.equal(sa.innerText, "makeSearchA");
+});
