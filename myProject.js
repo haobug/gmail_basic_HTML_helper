@@ -16,8 +16,6 @@
 
     var getHash = function(urlstr){
         var link = makeA("getHash", urlstr);
-        console.log({urlstr})
-        console.log({link})
         return link.hash;
     };
 
@@ -50,7 +48,6 @@
         var param = getParam(query, name);
         return param.substring(param.indexOf("=")+1);
     };
-//TODO: 返回到搜索结果 bug
 
     var makeParam = function(name, value){
         return name + "=" + escape(value)
@@ -74,31 +71,18 @@
     var mergeQuerys = function(oldQ, newQ){
         var param = newQ.substring(0, newQ.indexOf("="));
         var newValue = newQ.substring(newQ.indexOf("=")+1);
-        console.log({param});
-        console.log({newValue});
         if (oldQ.indexOf(makeParam(param,"")) != -1){
             var oldValue = getParamValue(oldQ, param);
             if (param == "q"){ /* marge for q param only */
-                console.log({oldValue});
                 var oldOrig = unescape(oldValue);
-                console.log({oldOrig});
                 if(oldOrig.indexOf(newValue) == -1)
                     newValue = oldOrig + " " + newValue;
-                console.log({newValue});
             }
             return oldQ.replace(getParam(oldQ, param), makeParam(param, newValue));
         } else {  /* not found */
             var newParam = param;
             return appendParam(oldQ, makeParam(newParam, newValue));
         }
-    };
-
-    var getSearchURL = function(link, search){
-        /* https://support.google.com/mail/answer/7190?hl=en */
-        console.log({search});
-        var search_base = getBaseURL(link) +
-            mergeQuerys(getQuery(link), "s=q");
-        return mergeQuerys(search_base, "q=" + search);
     };
 
     var appendText = function(oldText, newText){
@@ -130,8 +114,7 @@ var makeSearchA = function(link_text, search_action){
         for (var i in attrs){
             elem[i] = attrs[i];
         }
-        // elem.value = "new_label";
-        // elem.text = "[New label]";
+
         return elem;
     };
 
@@ -172,7 +155,6 @@ var addFilters = function(){
     for (i=0; i<filters.length; i+=1){
         var tmp_tr = trTrash.cloneNode(true);
         var tmp_td = tmp_tr.firstChild;
-        //if (tmp_td.firstChild.nodetype = "link")
         tmp_td.replaceChild(filters[i], tmp_td.firstChild);
         trTrash.parentNode.insertBefore(tmp_tr, trTrash.nextSibling);
     }
@@ -251,7 +233,6 @@ var createLabel = function(){
         } else {
             tmp_btn.value = "Failed";
         }
-        console.log(this.responseText);
     };
     var datas = {};
     datas.at = document.getElementsByName("at")[0].value;

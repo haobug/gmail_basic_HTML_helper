@@ -113,16 +113,6 @@ QUnit.test( "getPath", function( assert ) {
 	assert.equal(getPath(url), "/catalog/search.html");
 });
 
-QUnit.test( "getSearchURL", function( assert ) {
-	var url = "https://mail.google.com/mail/u/0/h/aj6ck996tvqb/?&#getSearchURL";
-	assert.equal(
-		getQuery(url), "?&");
-	assert.equal(
-		getSearchURL(url, "is:unread"),
-		"https://mail.google.com/mail/u/0/h/aj6ck996tvqb/?s=q&q=is%3Aunread"
-	);
-});
-
 QUnit.test( "makeElement", function( assert ) {
     var opt = makeElement("OPTION", {
             value: "new_label",
@@ -165,26 +155,22 @@ QUnit.test( "makeFormData", function( assert ) {
     var formdata = makeFormData(datas, boundary);
 
     var at_part = makeOneField("at", datas.at, boundary);
-    console.log(at_part);
     formdata = formdata.replace(at_part, '');
     assert.equal(formdata.indexOf(at_part), -1, "at_part");
 
     var nvp_bu_nl = makeOneField("nvp_bu_nl", datas.nvp_bu_nl, boundary);
-    console.log(nvp_bu_nl);
     assert.notEqual(nvp_bu_nl, at_part, "nvp_bu_nl != at_part");
     formdata = formdata.replace(nvp_bu_nl, '');
     assert.equal(formdata.indexOf(nvp_bu_nl), -1, "nvp_bu_nl");
     assert.equal(formdata.indexOf('nvp_bu_nl'), -1, "nvp_bu_nl_str");
 
     var ecn = makeOneField("ecn", datas.ecn, boundary);
-    console.log(ecn);
     assert.notEqual(ecn, at_part);
     formdata = formdata.replace(ecn, '');
     assert.equal(formdata.indexOf(ecn), -1, "ecn");
     assert.equal(formdata.indexOf('ecn'), -1, "ecn_str");
 
     var redir = makeOneField("redir", datas.redir, boundary);
-    console.log(redir);
     assert.notEqual(redir, at_part);
     formdata = formdata.replace(redir, '');
     assert.equal(-1, formdata.indexOf(redir), "redir");
