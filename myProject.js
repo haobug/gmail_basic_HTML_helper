@@ -129,7 +129,7 @@ var makeSearchA = function(link_text, search_action){
         return xhttp;
     };
 
-var addFilters = function(){
+var addFilters = function(search_links){
     //add filter at message page
     var links = document.links;
     var i = 0;
@@ -141,23 +141,12 @@ var addFilters = function(){
             break;
         }
     }
-
-    var unreadA = makeSearchA("is:unread", "is:unread");
-    var readA = makeSearchA("is:read", "is:read");
-    var weekA = makeSearchA("This week", "newer_than:7d");
-    var lastWeekA = makeSearchA("Last Week", "older_than:7d newer_than:14d");
-    var olderA = makeSearchA("2 week older", "older_than:14d");
-    var inboxA = makeSearchA("Inbox only", "in:inbox");
-
-    var filters = [
-        unreadA,
-        readA,
-        inboxA,
-        weekA,
-        lastWeekA,
-        olderA
-        ];
+    var filters = [];
+    for (var text in search_links){
+        filters.push(makeSearchA(text, search_links[text]));
+    }
     filters.reverse();
+
     for (i=0; i<filters.length; i+=1){
         var tmp_tr = trTrash.cloneNode(true);
         var tmp_td = tmp_tr.firstChild;
@@ -287,6 +276,15 @@ var addNewLabel = function(){
 
 var mainAGBHE = function(){
     'use strict';
-    addFilters();
+    var filter_links = {
+        /* "text":"search:value" */"
+        "is:unread":"is:unread",
+        "is:read":"is:read",
+        "Inbox only":"in:inbox",
+        "This week":"newer_than:7d",
+        "Last Week":"older_than:7d newer_than:14d",
+        "2 week older":"older_than:14d"
+    };
+    addFilters(filter_links);
     addNewLabel();
 };
