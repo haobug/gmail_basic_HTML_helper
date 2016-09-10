@@ -142,18 +142,22 @@ var addFilters = function(){
         }
     }
 
-    var unreadA = makeSearchA("unread", "is:unread");
+    var unreadA = makeSearchA("is:unread", "is:unread");
+    var readA = makeSearchA("is:read", "is:read");
     var weekA = makeSearchA("This week", "newer_than:7d");
-    var olderA = makeSearchA("1 week older", "older_than:7d");
-    var inboxA = makeSearchA("inbox", "in:inbox");
+    var lastWeekA = makeSearchA("Last Week", "older_than:7d newer_than:14d");
+    var olderA = makeSearchA("2 week older", "older_than:14d");
+    var inboxA = makeSearchA("Inbox only", "in:inbox");
 
     var filters = [
         unreadA,
+        readA,
+        inboxA,
         weekA,
-        olderA,
-        inboxA
+        lastWeekA,
+        olderA
         ];
-
+    filters.reverse();
     for (i=0; i<filters.length; i+=1){
         var tmp_tr = trTrash.cloneNode(true);
         var tmp_td = tmp_tr.firstChild;
