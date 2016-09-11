@@ -85,11 +85,87 @@
         }
     };
 
-    var appendText = function(oldText, newText){
-        if (oldText.indexOf(newText) == -1){/* not found */
-            oldText += " " + newText;
+    var search2dict= function(searchText, dict){
+        var sp = " ";
+        var sp2 = ":";
+        var searches = [];
+        if (searchText.indexOf(sp) != -1){
+            searches = searchText.split(sp);
+        } else { /* only one search */
+            searches = [searchText];
         }
-        return oldText;
+        for(var bb= 0; bb < searches.length; bb++){
+            var NmeVal  = searches[bb].split(sp2);
+            dict[NmeVal[0]] = NmeVal[1];
+        }
+    };
+
+    var compare = function(A, B){
+        var inta = parseInt(A);
+        var intb = parseInt(B);
+        var c;
+        if(isNaN(inta)|| isNaN(intb)){ // pure stirng
+            c = A.localeCompare(B);
+        } else {
+            c = inta-intb;
+        }
+        if(c == 0)
+            return c;
+        return c > 0 ? 1 : -1;
+    };
+
+    var eq = function(A, B){
+        return compare(A, B) == 0;
+    };
+
+    var gt = function(A, B){
+        return compare(A, B) == 1;
+    };
+
+    var lt = function(A, B){
+        return compare(A, B) == -1;
+    };
+
+var evalDate = function(dict){
+    if (dict["newer_than"] && dict["older_than"]){
+        var newer = dict["newer_than"];
+        var older = dict["older_than"];
+        if(eq(newer, older)){
+            dict["newer_than"] = null;
+        } else if(gt(newer, older)){
+            /* do nonthing*/
+        } else if (lt(newer, older)){
+            dict["newer_than"] = null;
+            dict["older_than"] = null;
+        }
+    }
+};
+
+    var appendText = function(oldText, newText){
+        var sp = " ";
+        var sp2 = ":";
+
+        if (oldText.trim() == ""){
+            return newText;
+        }
+        if (oldText.indexOf(newText) != -1
+            || newText.trim() == ""){
+            return oldText;
+        }
+        var output = oldText;
+        var old_searches = {};
+        search2dict(oldText, old_searches);
+        search2dict(newText, old_searches);
+        evalDate(old_searches);
+        output = "";
+        for(var oo in old_searches){
+            if (old_searches[oo] != null){
+                if (output.indexOf(sp2) != -1)
+                    output += sp;
+                output += oo + sp2 + old_searches[oo];
+            }
+        }
+        return output;
     };
 
 var sbqSearchFunc = function(search){

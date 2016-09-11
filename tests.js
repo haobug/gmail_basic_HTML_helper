@@ -212,3 +212,38 @@ QUnit.test( "makeSearchA", function( assert ) {
     assert.equal(sa.href, "javascript:void(0);");
     assert.equal(sa.innerText, "makeSearchA");
 });
+
+
+QUnit.test( "compare", function( assert ) {
+    assert.equal(compare(1, 1), 0, 'compare(1, 1)');
+    assert.equal(compare("11a", "11a"), 0,'"11a", "11a")');
+    assert.equal(compare("7a", "14a"), -1, 'compare("7a", "14a")');
+    assert.equal(compare("14d", "7d"), 1, 'compare("14d", "7d")');
+    assert.equal(compare("14d", "7d2"), 1, 'compare("14d", "7d2"),');
+    assert.equal(eq("a", "a"), true, 'eq("a", "a")');
+    assert.equal(eq("aaa", "aaa"), true, 'eq("aaa", "aaa")');
+    assert.equal(eq("a", "ab"), false, 'eq("a", "ab")');
+    assert.equal(lt("a", "ab"), true, 'lt("a", "ab")');
+    assert.equal(gt("ab", "aa"), true, 'gt("aa", "ab")');
+});
+
+
+QUnit.test( "evalDate", function( assert ) {
+    var testdict = {};
+    search2dict("older_than:7d newer_than:14d", testdict);
+    search2dict("older_than:14d", testdict);
+    evalDate(testdict);
+    assert.equal(testdict["newer_than"], null, "older_than");
+});
+
+QUnit.test( "appendText", function( assert ) {
+    assert.equal(appendText("", "is:unread"), "is:unread", "same search");
+    assert.equal(appendText("is:read", "is:unread"), "is:unread", "same key");
+    assert.equal(appendText("newer_than:7d", "newer_than:14d"), "newer_than:14d", "same key2");
+    assert.equal(appendText("is:unread", "in:inbox"), "is:unread in:inbox", "differ key");
+    assert.equal(appendText("newer_than:14d", "older_than:7d"), "newer_than:14d older_than:7d", "last week");
+    assert.equal(appendText("older_than:7d newer_than:14d", "older_than:14d"), "older_than:14d", "older side");
+    assert.equal(appendText("older_than:7d" , "newer_than:4d"), "", "empty");
+    assert.equal(appendText("newer_than:7d" , "newer_than:4d"), "newer_than:4d", "newer side");
+    assert.equal(appendText("newer_than:14d" , "older_than:7d"), "newer_than:14d older_than:7d", "raange between");
+});
