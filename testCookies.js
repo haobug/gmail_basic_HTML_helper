@@ -4,11 +4,10 @@ var runTests = function(){
     var href="https://code.jquery.com/qunit/qunit-2.0.1.css";
     var css = makeElement("link", {rel, href});
     document.head.appendChild(css);
-    
+
     var innerHTML = '<div id="qunit"></div><div id="qunit-fixture"></div>';
     var qunit_div = makeElement("div", {innerHTML});
     document.body.insertBefore(qunit_div, document.body.firstChild);
-    
 
 QUnit.test( "getCookie", function( assert ) {
     var html_at = document.getElementsByName("at")[0].value;
@@ -18,7 +17,6 @@ QUnit.test( "getCookie", function( assert ) {
 QUnit.test( "setCookie", function( assert ) {
     var tact = document.getElementsByName("tact")[0];
     curAction = tact.selectedIndex
-    console.log(curAction);
     setCookie("curAction", curAction);
     assert.equal(getCookie("curAction"), curAction, "set&get");
 });

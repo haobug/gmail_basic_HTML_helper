@@ -352,14 +352,12 @@ var addNewLabel = function(){
 
 var restoreAction = function(cookiename){
     var getAction = getCookie(cookiename);
-    console.log("getCookie", {getAction});
     var tact = document.getElementsByName("tact")[0];
     tact.selectedIndex = getAction;
-    
+
     tact.addEventListener("change", function(){
         var tact = document.getElementsByName("tact")[0];
         var setAction = tact.selectedIndex;
-        console.log("setCookie", {setAction});
         setCookie(cookiename, setAction, 7, '/');
     });
 };
