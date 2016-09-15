@@ -319,12 +319,15 @@ var createLabel = function(){
 
 var addNewLabel = function(){
     // add new label option on creating filter wizard
-    var cf2_sel = document.getElementsByName("cf2_sel")[0];
+    var sels = document.getElementsByName("cf2_sel");
+    var cf2_sel = sels.length > 0 ? sels[0] : null;
     if (!cf2_sel)
         return;
     var value= "new_label";
     var innerText ="[New label]";
     var new_opt = makeElement("OPTION", {value, innerText});
+    if (cf2_sel.tagName != "SELECT")
+        return;
     cf2_sel.insertBefore(new_opt, cf2_sel.options[0].nextSibling);
     cf2_sel.addEventListener("change", function(){
         if(cf2_sel.options[cf2_sel.selectedIndex] != new_opt)
@@ -353,13 +356,16 @@ var addNewLabel = function(){
 var irfChecked = function(){
     if (window.location.toString().indexOf("v=prf") !=0){
         var irfchk = document.getElementById("irf");
-        irfchk && irfchk.checked = true;
+        if(irfchk)
+            irfchk.checked = true;
     }
 };
 
 var restoreAction = function(cookiename){
     var getAction = getCookie(cookiename);
     var tact = document.getElementsByName("tact")[0];
+    if (!tact)
+        return;
     tact.selectedIndex = getAction;
 
     tact.addEventListener("change", function(){
