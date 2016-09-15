@@ -350,6 +350,13 @@ var addNewLabel = function(){
     });
 };
 
+var irfChecked = function(){
+    if (window.location.toString().indexOf("v=prf") !=0){
+        var irfchk = document.getElementById("irf");
+        irfchk && irfchk.checked = true;
+    }
+};
+
 var restoreAction = function(cookiename){
     var getAction = getCookie(cookiename);
     var tact = document.getElementsByName("tact")[0];
@@ -375,5 +382,6 @@ var mainAGBHE = function(){
     };
     addFilters(filter_links);
     addNewLabel();
+    irfChecked();
     restoreAction("currAction");
 };
