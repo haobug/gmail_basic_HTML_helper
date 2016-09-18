@@ -1,20 +1,16 @@
 //tests.js
 QUnit.test("getBaseURL", function( assert ) {
 	var url = "http://www.oreilly.com:1234/catalog/search.html?q=JavaScript&m=10#results";
-	var link = document.createElement("A");
-	link.href = url;
-	assert.equal(getBaseURL(link), "http://www.oreilly.com:1234/catalog/search.html");
+        assert.equal(typeof url, "string");
+	assert.equal(getBaseURL(url), "http://www.oreilly.com:1234/catalog/search.html");
 });
 
 QUnit.test( "getQuery", function( assert ) {
 	var url = "http://www.oreilly.com:1234/catalog/search.html?q=JavaScript&m=10#results";
-	var link = document.createElement("A");
-	link.href = url;
-	assert.equal(getQuery(link), "?q=JavaScript&m=10");
+	assert.equal(getQuery(url), "?q=JavaScript&m=10");
 	url = "https://mail.google.com/mail/u/0/h/aj6ck996tvqb/?&#getSearchURL";
-	link.href = url;
 	assert.equal(
-		getQuery(link), "?&");
+		getQuery(url), "?&");
 });
 
 QUnit.test( "makeA", function( assert ) {
@@ -108,22 +104,45 @@ QUnit.test( "mergeQuerys", function( assert ) {
 
 QUnit.test( "getHash", function( assert ) {
 	var url = "http://www.oreilly.com:1234/catalog/search.html?q=JavaScript&m=10#getHash";
-	var link = document.createElement("A");
-	link.href = url;
-	assert.equal(getHash(link), "#getHash");
+	assert.equal(getHash(url), "#getHash");
 	//#results is hash
 });
 
-QUnit.test( "getSearchURL", function( assert ) {
-	var url = "https://mail.google.com/mail/u/0/h/aj6ck996tvqb/?&#getSearchURL";
-	var oldlink = document.createElement("A");
-	oldlink.href = url;
-	assert.equal(
-		getQuery(oldlink), "?&");
-	assert.equal(
-		getSearchURL(oldlink, "is:unread"),
-		"https://mail.google.com/mail/u/0/h/aj6ck996tvqb/?s=q&q=is%3Aunread"
-	);
+QUnit.test( "getPath", function( assert ) {
+	var url = "http://www.oreilly.com:1234/catalog/search.html?q=JavaScript&m=10#getHash";
+	assert.equal(getPath(url), "/catalog/search.html");
+});
+
+QUnit.test( "makeElement", function( assert ) {
+    var opt = makeElement("OPTION", {
+            value: "new_label",
+            text: "[New label]"}
+        );
+    assert.equal("OPTION", opt.tagName);
+    
+    var url = "http://mail.google.com/";
+    var a = makeElement("A", {
+            href: url,
+            innerText: "[A link]"}
+        );
+    assert.equal(a.tagName, "A");
+    assert.equal(a.innerText, "[A link]");
+    assert.equal(a.href, url);
+
+    var value= "new_label";
+    var innerText ="[New label]";
+    var new_opt = makeElement("OPTION", {value, innerText});
+    assert.equal(new_opt.value, value);
+    assert.equal(new_opt.text, innerText);
+
+    var attrs = {};
+    attrs.type = "button";
+    attrs.value = "Create";
+    attrs.id = "create_btn";
+    var new_input = makeElement("INPUT", attrs);
+    assert.equal(new_input.type, attrs.type);
+    assert.equal(new_input.value, attrs.value);
+    assert.equal(new_input.id, attrs.id);
 });
 
 QUnit.test( "makeElement", function( assert ) {
@@ -222,4 +241,45 @@ QUnit.test( "makeid", function( assert ) {
     assert.equal(makeid(16).length, 16);
     assert.equal(makeid(10).length, 10);
     assert.notEqual(makeid(16), makeid(16), "diff on call");
+});
+
+QUnit.test( "makeSearchA", function( assert ) {
+    var sa = makeSearchA("makeSearchA", "is:unread");
+    assert.equal(sa.href, "javascript:void(0);");
+    assert.equal(sa.innerText, "makeSearchA");
+});
+
+
+QUnit.test( "compare", function( assert ) {
+    assert.equal(compare(1, 1), 0, 'compare(1, 1)');
+    assert.equal(compare("11a", "11a"), 0,'"11a", "11a")');
+    assert.equal(compare("7a", "14a"), -1, 'compare("7a", "14a")');
+    assert.equal(compare("14d", "7d"), 1, 'compare("14d", "7d")');
+    assert.equal(compare("14d", "7d2"), 1, 'compare("14d", "7d2"),');
+    assert.equal(eq("a", "a"), true, 'eq("a", "a")');
+    assert.equal(eq("aaa", "aaa"), true, 'eq("aaa", "aaa")');
+    assert.equal(eq("a", "ab"), false, 'eq("a", "ab")');
+    assert.equal(lt("a", "ab"), true, 'lt("a", "ab")');
+    assert.equal(gt("ab", "aa"), true, 'gt("aa", "ab")');
+});
+
+
+QUnit.test( "evalDate", function( assert ) {
+    var testdict = {};
+    search2dict("older_than:7d newer_than:14d", testdict);
+    search2dict("older_than:14d", testdict);
+    evalDate(testdict);
+    assert.equal(testdict["newer_than"], null, "older_than");
+});
+
+QUnit.test( "appendText", function( assert ) {
+    assert.equal(appendText("", "is:unread"), "is:unread", "same search");
+    assert.equal(appendText("is:read", "is:unread"), "is:unread", "same key");
+    assert.equal(appendText("newer_than:7d", "newer_than:14d"), "newer_than:14d", "same key2");
+    assert.equal(appendText("is:unread", "in:inbox"), "is:unread in:inbox", "differ key");
+    assert.equal(appendText("newer_than:14d", "older_than:7d"), "newer_than:14d older_than:7d", "last week");
+    assert.equal(appendText("older_than:7d newer_than:14d", "older_than:14d"), "older_than:14d", "older side");
+    assert.equal(appendText("older_than:7d" , "newer_than:4d"), "", "empty");
+    assert.equal(appendText("newer_than:7d" , "newer_than:4d"), "newer_than:4d", "newer side");
+    assert.equal(appendText("newer_than:14d" , "older_than:7d"), "newer_than:14d older_than:7d", "raange between");
 });
