@@ -301,6 +301,9 @@ var createLabel = function(){
             opt_new.selected = true;
             cf2_sel.appendChild(opt_new);
             hideElement(tmp_btn);
+            var cf2_cat = document.getElementById("cf2_cat");
+            if (cf2_cat && cf2_cat.tagName == "INPUT")
+                cf2_cat.checked = true;
         } else {
             tmp_btn.value = "Failed";
         }
@@ -332,6 +335,8 @@ var addNewLabel = function(){
     cf2_sel.addEventListener("change", function(){
         if(cf2_sel.options[cf2_sel.selectedIndex] != new_opt)
             return;
+        if(cf2_sel.selectedIndex != 0)
+            document.getElementById("cf2_cat").checked = true;
         var attrs = {};
         attrs.type = "button";
         attrs.value = "Create";
@@ -345,6 +350,10 @@ var addNewLabel = function(){
         attrs = {};
         attrs.type = "text";
         attrs.value = "";
+        var getLabel = getCookie("guessedLabel");
+        if (getLabel.trim() != ""){
+            attrs.value = getLabel;
+        }
         attrs.id = "label_edit";
         var label_edit = makeElement("INPUT", attrs);
         cf2_sel.parentNode.insertBefore(
@@ -375,6 +384,37 @@ var restoreAction = function(cookiename){
     });
 };
 
+    var fullSplit = function(str, ptn){
+        if (str.match(ptn) == null)
+            return str;
+        var words = str.split(ptn);
+        console.log(words);
+        return words;
+    };
+
+    var firstNonEmpty = function(arr){
+        for(var i in arr){
+            if(arr[i].trim() != "")
+                return arr[i];
+        }
+        return "";
+    };
+
+var guessLabel = function(ptn){
+    var nvp_bu_nxsb = document.getElementsByName("nvp_bu_nxsb")[0];
+    if (!nvp_bu_nxsb)
+        return;
+    console.log({nvp_bu_nxsb});
+    nvp_bu_nxsb.form.addEventListener("submit", function(){
+        alert("fired")
+        var cf1_from = document.getElementsByName("cf1_from")[0];
+        var setLabel = firstNonEmpty(fullSplit(cf1_from.value, ptn));
+        console.log({setLabel});
+        setCookie("guessedLabel", setLabel, 7, '/');
+        return false;
+    });
+};
+
 var mainAGBHE = function(){
     'use strict';
     var filter_links = {
@@ -388,6 +428,7 @@ var mainAGBHE = function(){
     };
     addFilters(filter_links);
     addNewLabel();
+    guessLabel(/[@.]/);
     irfChecked();
     restoreAction("currAction");
 };
